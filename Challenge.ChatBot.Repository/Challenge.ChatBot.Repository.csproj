@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Challenge.ChatBot.Domain.Core\Challenge.ChatBot.Domain.Core.csproj" />
+    <ProjectReference Include="..\Challenge.ChatBot.Util\Challenge.ChatBot.Util.csproj" />
+  </ItemGroup>
+
+</Project>
