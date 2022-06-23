@@ -14,5 +14,5 @@ docker run -d -p 15672:15672 -p 5672:5672 --name rabbit-test-for-medium rabbitmq
 Source: https://code.imaginesoftware.it/rabbitmq-with-docker-on-windows-in-30-minutes-172e88bb0808
 
 
-Obs.: the stock (actor) are being saved on database only to recover the historic of the conversations with the bot.
-I'm not returning error messages or non reconized messages only to keep the conversation with the "customer".
+Obs.: the stock messages (actors) are being saved on a database only to recover the history of the conversations with the bot.
+I'm not returning error messages or non recognized messages only to keep the conversation with the "customer".
