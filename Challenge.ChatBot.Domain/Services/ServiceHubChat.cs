@@ -134,7 +134,7 @@ namespace Challenge.ChatBot.Domain.Services
                  }
              });
 
-            foreach (var socket in _webSocketModel.List)
+            foreach (var socket in _webSocketModel.List?.Where(w => w.UserName.Equals(message.UserName)))
                 await socket.WebSocket.SendAsync(message.ToArraySegment(), type, finish, ct);
         }
 
