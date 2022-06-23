@@ -14,9 +14,9 @@ namespace Challenge.ChatBot.Repository.Repositories
             Users = chatBotContext.Users;
         }
 
-        public async Task<bool> VerifyUserAccess(string username, string password)
+        public async Task<UserModel> VerifyUserAccess(string username, string password)
         {
-            return await Users.AnyAsync(x => x.UserName.Equals(username) && x.Password.ComparePassword(password));
+            return await Users?.Where(x => x.UserName.Equals(username) && x.Password.ComparePassword(password))?.FirstAsync();
         }
 
         public async Task<bool> VerifyUserExist(string username)

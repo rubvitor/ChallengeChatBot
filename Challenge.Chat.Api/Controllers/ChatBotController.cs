@@ -1,6 +1,7 @@
 using Challenge.ChatBot.Domain.Core.Commands;
 using Challenge.ChatBot.Domain.Core.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
 
@@ -8,6 +9,7 @@ namespace Challenge.Chat.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class ChatBotController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -18,7 +18,7 @@ namespace Challenge.ChatBot.Domain.Handlers
                                   IRequestHandler<ChatBotUserCommand, bool>,
                                   IRequestHandler<ChatBotRemoveCommand, bool>,
                                   IRequestHandler<ChatBotSessionCommand, bool>,
-                                  IRequestHandler<ChatBotUserPasswordCommand, bool>
+                                  IRequestHandler<ChatBotUserPasswordCommand, UserModel>
     {
 
         private readonly IMessageRepository _messageRepository;
@@ -49,7 +49,7 @@ namespace Challenge.ChatBot.Domain.Handlers
             return await _messageRepository.List(request.UserName);
         }
 
-        public async Task<bool> Handle(ChatBotUserPasswordCommand request, CancellationToken ct)
+        public async Task<UserModel> Handle(ChatBotUserPasswordCommand request, CancellationToken ct)
         {
             return await _userRepository.VerifyUserAccess(request.UserName, request.Password);
         }

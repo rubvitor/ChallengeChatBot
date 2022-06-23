@@ -21,29 +21,63 @@ namespace Challenge.ChatBot.Util
 
         public static string EncriptPassword(this string input)
         {
-            ASCIIEncoding ByteConverter = new ASCIIEncoding();
+            var key = Encoding.UTF8.GetBytes(Security.Key);
 
-            byte[] dataToEncrypt = ByteConverter.GetBytes(input);
+            using (var aesAlg = Aes.Create())
+            {
+                using (var encryptor = aesAlg.CreateEncryptor(key, aesAlg.IV))
+                {
+                    using (var msEncrypt = new MemoryStream())
+                    {
+                        using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                        using (var swEncrypt = new StreamWriter(csEncrypt))
+                            swEncrypt.Write(input);
 
+                        var iv = aesAlg.IV;
 
-            using RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
+                        var decryptedContent = msEncrypt.ToArray();
 
-            byte[] encryptedData = RSAalg.Encrypt(dataToEncrypt, false);
+                        var result = new byte[iv.Length + decryptedContent.Length];
 
-            return Encoding.UTF8.GetString(encryptedData);
+                        Buffer.BlockCopy(iv, 0, result, 0, iv.Length);
+                        Buffer.BlockCopy(decryptedContent, 0, result, iv.Length, decryptedContent.Length);
+
+                        return Convert.ToBase64String(result);
+                    }
+                }
+            }
         }
 
         public static string DecriptPassword(this string input)
         {
-            ASCIIEncoding ByteConverter = new ASCIIEncoding();
+            var fullCipher = Convert.FromBase64String(input);
 
-            byte[] dataEncrypted = ByteConverter.GetBytes(input);
+            var iv = new byte[16];
+            var cipher = new byte[16];
 
-            using RSACryptoServiceProvider RSAalg = new RSACryptoServiceProvider();
+            Buffer.BlockCopy(fullCipher, 0, iv, 0, iv.Length);
+            Buffer.BlockCopy(fullCipher, iv.Length, cipher, 0, iv.Length);
+            var key = Encoding.UTF8.GetBytes(Security.Key);
 
-            var decryptedData = RSAalg.Decrypt(dataEncrypted, false);
+            using (var aesAlg = Aes.Create())
+            {
+                using (var decryptor = aesAlg.CreateDecryptor(key, iv))
+                {
+                    string result;
+                    using (var msDecrypt = new MemoryStream(cipher))
+                    {
+                        using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        {
+                            using (var srDecrypt = new StreamReader(csDecrypt))
+                            {
+                                result = srDecrypt.ReadToEnd();
+                            }
+                        }
+                    }
 
-            return Encoding.UTF8.GetString(decryptedData);
+                    return result;
+                }
+            }
         }
 
         public static bool ComparePassword(this string input, string compare)
