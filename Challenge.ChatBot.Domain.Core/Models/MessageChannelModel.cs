@@ -11,6 +11,7 @@
         public string Close { get; set; }
         public string Volume { get; set; }
         public string Receiver { get; set; }
+        public string UserName { get; set; }
         public string MessageReturn
         {
             get

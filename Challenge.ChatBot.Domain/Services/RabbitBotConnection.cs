@@ -70,6 +70,7 @@ namespace Challenge.ChatBot.Domain.Services
 
                     var returnChannel = _serviceHub.GetChannel(messageDeserialized.Message).Result;
                     returnChannel.Receiver = messageDeserialized.Receiver;
+                    returnChannel.UserName = messageDeserialized.UserName;
 
                     Console.WriteLine($"Message Processed from HUB: {returnChannel} at {DateTime.Now} User {messageDeserialized.UserName}");
 

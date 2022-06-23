@@ -17,10 +17,12 @@ namespace Challenge.ChatBot.Repository.Repositories
 
         public async Task<List<MessageModel>> List(string userName)
         {
-            return await messageModels.Where(x => x.UserName.Equals(userName)).OrderBy(x => x.DateMessage).Take(50).ToListAsync();
+            var messagesGeral = await messageModels.ToListAsync();
+            var messages = await messageModels.Where(x => x.UserName.Equals(userName)).OrderBy(x => x.DateMessage).Take(50).ToListAsync();
+            return messages;
         }
 
-        public async Task<bool> AddMessage(string userName, string message, string receiver = null)
+        public async Task<bool> AddMessage(string userName, string message, string receiver = null, string actor = null)
         {
             await messageModels.AddAsync(new MessageModel
             {
@@ -28,7 +30,8 @@ namespace Challenge.ChatBot.Repository.Repositories
                 Id = Guid.NewGuid(),
                 Message = message,
                 DateMessage = DateTime.Now,
-                Receiver = receiver
+                Receiver = receiver,
+                Actor = actor
             });
 
             return await _chatBotContext.SaveChangesAsync() > 0;

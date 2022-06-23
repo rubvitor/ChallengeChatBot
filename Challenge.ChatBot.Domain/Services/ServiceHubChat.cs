@@ -1,7 +1,9 @@
 ﻿using Challenge.ChatBot.Domain.Core.Entities;
+using Challenge.ChatBot.Domain.Core.Interfaces.Repositories;
 using Challenge.ChatBot.Domain.Core.Interfaces.Services;
 using Challenge.ChatBot.Domain.Core.Models;
 using Challenge.ChatBot.Util;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -17,11 +19,13 @@ namespace Challenge.ChatBot.Domain.Services
         private readonly ConfigurationChatModel rabbitConfigModel;
         private readonly IWebSocketModel _webSocketModel;
         private readonly IErrorHandler _errorHandler;
-
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         public ServiceHubChat(IOptions<ConfigurationChatModel> config,
                               IErrorHandler errorHandler,
-                              IWebSocketModel webSocketModel)
+                              IWebSocketModel webSocketModel,
+                              IServiceScopeFactory serviceScopeFactory)
         {
+            _serviceScopeFactory = serviceScopeFactory;
             _errorHandler = errorHandler;
             rabbitConfigModel = config.Value;
             _webSocketModel = webSocketModel;
@@ -66,9 +70,12 @@ namespace Challenge.ChatBot.Domain.Services
 
                     var messageModel = new MessageModel
                     {
-                        DateMessage = Convert.ToDateTime(message.Date),
+                        DateMessage = DateTime.Now,
                         Message = message.MessageReturn,
-                        Receiver = message.Receiver
+                        Receiver = message.Receiver,
+                        Actor = message.Receiver,
+                        Id = Guid.NewGuid(),
+                        UserName = message.UserName
                     };
 
                     SendMessage(messageModel, WebSocketMessageType.Text, true);
@@ -84,10 +91,20 @@ namespace Challenge.ChatBot.Domain.Services
         {
             try
             {
-                if (message.Message.Contains("/stock="))
+                var messageNew = new MessageModel
                 {
-                    message.Message = message.Message.Replace("/stock=", string.Empty);
-                    var messageBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+                    Actor = message.Receiver,
+                    Receiver = message.Receiver,
+                    DateMessage = DateTime.Now,
+                    Id = Guid.NewGuid(),
+                    Message = message.Message,
+                    UserName = message.UserName
+                };
+
+                if (messageNew.Message.Contains("/stock="))
+                {
+                    messageNew.Message = message.Message.Replace("/stock=", string.Empty);
+                    var messageBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageNew));
 
                     channelModel.BasicPublish(
                         exchange: "",
@@ -98,7 +115,7 @@ namespace Challenge.ChatBot.Domain.Services
                     return;
                 }
 
-                await FinishWebSockets(message, type, finish, CancellationToken.None);
+                await FinishWebSockets(messageNew, type, finish, CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -108,6 +125,15 @@ namespace Challenge.ChatBot.Domain.Services
 
         private async Task FinishWebSockets(MessageModel message, WebSocketMessageType type, bool finish, CancellationToken ct)
         {
+            _ = Task.Run(() =>
+             {
+                 using (var scope = _serviceScopeFactory.CreateScope())
+                 {
+                     var _messageRepository = scope.ServiceProvider.GetRequiredService<IMessageRepository>();
+                     _messageRepository.AddMessage(message).Wait();
+                 }
+             });
+
             foreach (var socket in _webSocketModel.List)
                 await socket.WebSocket.SendAsync(message.ToArraySegment(), type, finish, ct);
         }

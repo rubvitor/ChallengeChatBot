@@ -22,15 +22,10 @@ namespace Challenge.Chat.Api.Controllers
             if (user is null)
                 return NotFound(new { message = "User or Password Invalid." });
 
-            var token = TokenService.GenerateToken(user);
-
             user.Password = string.Empty;
+            user.Token = TokenService.GenerateToken(user);
 
-            return new
-            {
-                user = user,
-                token = token
-            };
+            return user;
         }
     }
 }

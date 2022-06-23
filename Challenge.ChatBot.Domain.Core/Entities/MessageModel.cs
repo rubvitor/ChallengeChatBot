@@ -7,22 +7,26 @@ namespace Challenge.ChatBot.Domain.Core.Entities
     {
         public MessageModel() { }
 
-        public MessageModel(Guid id, string message, string username, string receiver, DateTime dateMessage)
+        public MessageModel(Guid id, string message, 
+            string username, string receiver, 
+            DateTime dateMessage, string actor)
         {
             this.Id = id;
             this.Message = message;
             this.UserName = username;
             this.Receiver = receiver;
             this.DateMessage = dateMessage;
+            this.Actor = actor;
         }
 
         [Key]
         public Guid Id { get; set; }
-        public string Message { get; set; }
-        public string UserName { get; set; }
-        public string Receiver { get; set; }
-        public DateTime DateMessage { get; set; }
+        public string? Message { get; set; }
+        public string? UserName { get; set; }
+        public string? Receiver { get; set; }
+        public string? Actor { get; set; }
+        public DateTime? DateMessage { get; set; }
         [ForeignKey("UserName")]
-        public UserModel User { get; set; }
+        public UserModel? User { get; set; }
     }
 }

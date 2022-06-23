@@ -9,7 +9,6 @@ namespace Challenge.Chat.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
     public class ChatBotController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,6 +19,7 @@ namespace Challenge.Chat.Api.Controllers
         }
 
         [HttpGet("/messages/{username}")]
+        [Authorize]
         public List<MessageModel> GetMessages(string username)
         {
             if (!_mediator.Send(new ChatBotUserCommand { UserName = username }).Result)
@@ -29,6 +29,7 @@ namespace Challenge.Chat.Api.Controllers
         }
 
         [HttpGet("/websocket/{username}")]
+        [AllowAnonymous]
         public void GetWebSocket(string username)
         {
             if (!_mediator.Send(new ChatBotUserCommand { UserName = username }).Result)

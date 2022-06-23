@@ -100,12 +100,12 @@ namespace Challenge.ChatBot.Domain.Handlers
 
                     var messageViewModel = JsonConvert.DeserializeObject<MessageViewModel>(encodedBuffer);
 
-                    var messageModel = new MessageModel(Guid.NewGuid(), messageViewModel.Message, messageViewModel.Username, nameReceiver, DateTime.Now);
+                    var messageModel = new MessageModel(Guid.NewGuid(), messageViewModel.Message, messageViewModel.Username, nameReceiver, DateTime.Now, messageViewModel.Username);
                     await _messageRepository.AddMessage(messageModel);
 
                     await _serviceHubChat.SendMessage(messageModel, result.MessageType, result.EndOfMessage);
 
-                    _logger.Log(LogLevel.Information, $"Message sent to {messageModel.UserName} at {DateTime.Now}");
+                    _logger.Log(LogLevel.Information, $"Message sent to {nameReceiver} at {DateTime.Now}");
 
                     result = await request.WebSocket.ReceiveAsync(buffer, CancellationToken.None);
 
