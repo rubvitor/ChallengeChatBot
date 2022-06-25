@@ -22,11 +22,11 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
+WORKDIR /
 COPY ["Challenge.Chat.Api/Challenge.Chat.Api.csproj", "Challenge.Chat.Api/"]
 RUN dotnet restore "Challenge.Chat.Api/Challenge.Chat.Api.csproj"
 COPY . .
-WORKDIR "/src/Challenge.Chat.Api"
+WORKDIR "/Challenge.Chat.Api"
 RUN dotnet build "Challenge.Chat.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
