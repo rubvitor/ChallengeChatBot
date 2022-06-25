@@ -3,6 +3,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 # Add files.
 ADD rabbit/rabbitmq-start /usr/local/bin/
 
+RUN apt-get update && apt-get install wget
+
+RUN apt-get update && apt-get install -y gnupg2
+
 # Install RabbitMQ.
 RUN \
   wget -qO - https://www.rabbitmq.com/rabbitmq-signing-key-public.asc | apt-key add - && \
