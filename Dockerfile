@@ -1,25 +1,27 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0-jammy AS build
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
 FROM rabbitmq:3.8-management
 RUN rabbitmq-plugins enable --offline rabbitmq_mqtt rabbitmq_federation_management rabbitmq_stomp
 EXPOSE 5672
 EXPOSE 15692
 
-WORKDIR /
+
+WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /
 COPY ["Challenge.Chat.Api/Challenge.Chat.Api.csproj", "Challenge.Chat.Api/"]
+RUN dotnet restore "Challenge.Chat.Api/Challenge.Chat.Api.csproj"
 COPY . .
 WORKDIR "/Challenge.Chat.Api"
-RUN dotnet restore -r linux-x64
+RUN dotnet build "Challenge.Chat.Api.csproj" -c Release -o /app/build
 
-# copy and publish app and libraries
-COPY . .
-RUN dotnet publish -c release -o /app -r linux-x64 --self-contained false --no-restore
+FROM build AS publish
+RUN dotnet publish "Challenge.Chat.Api.csproj" -c Release -o /app/publish
 
-# final stage/image
-FROM mcr.microsoft.com/dotnet/runtime:6.0-jammy-amd64
+FROM base AS final
 WORKDIR /app
-COPY --from=build /app .
-ENTRYPOINT ["./dotnetapp"]
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "Challenge.Chat.Api.dll"]
