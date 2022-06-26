@@ -1,16 +1,13 @@
 ARG REPO=mcr.microsoft.com/dotnet/runtime
+FROM $REPO:3.1.26-bionic
 
-# Installer image
-FROM amd64/buildpack-deps:jammy-curl AS installer
-
-# Retrieve ASP.NET Core
-RUN aspnetcore_version=6.0.6 \
+# Install ASP.NET Core
+RUN aspnetcore_version=3.1.26 \
     && curl -fSL --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$aspnetcore_version/aspnetcore-runtime-$aspnetcore_version-linux-x64.tar.gz \
-    && aspnetcore_sha512='1a5c0f85820f0eb589700df94de6dbff45fe4089a37f1cd5b1fac33476a2cbd8d5c6f129e55b3716f5a7a2616f1a5a720c52238f21b28a510a3e5c8bcb8c516c' \
+    && aspnetcore_sha512='8bbf06012cdd2cff23c592e0d3c49d032d77add4dda8fba1d7ba73e6cc4ae97b1676908b14cdc7fc2fe723302e1efd27a44b48190a91d69c0e41bb5edb47501f' \
     && echo "$aspnetcore_sha512  aspnetcore.tar.gz" | sha512sum -c - \
-    && tar -oxzf aspnetcore.tar.gz ./shared/Microsoft.AspNetCore.App \
+    && tar -oxzf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
     && rm aspnetcore.tar.gz
-
 
 # ASP.NET Core image
 FROM $REPO:6.0.6-jammy-amd64
