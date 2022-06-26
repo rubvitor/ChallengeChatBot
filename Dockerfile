@@ -1,5 +1,5 @@
-ARG REPO=mcr.microsoft.com/dotnet/runtime
-FROM $REPO:3.1.26-bionic
+# https://hub.docker.com/_/microsoft-dotnet
+FROM mcr.microsoft.com/dotnet/sdk:6.0-jammy AS build
 
 # Install ASP.NET Core
 RUN aspnetcore_version=3.1.26 \
@@ -57,15 +57,18 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/runtime AS build
 WORKDIR /
 COPY ["Challenge.Chat.Api/Challenge.Chat.Api.csproj", "Challenge.Chat.Api/"]
-RUN dotnet restore "Challenge.Chat.Api/Challenge.Chat.Api.csproj"
-COPY . .
 WORKDIR "/Challenge.Chat.Api"
-RUN dotnet build "Challenge.Chat.Api.csproj" -c Release -o /app/build
 
-FROM build AS publish
-RUN dotnet publish "Challenge.Chat.Api.csproj" -c Release -o /app/publish
+# copy csproj and restore as distinct layers
+COPY *.csproj .
+RUN dotnet restore -r linux-x64
 
-FROM base AS final
+# copy and publish app and libraries
+COPY . .
+RUN dotnet publish -c release -o /app -r linux-x64 --self-contained false --no-restore
+
+# final stage/image
+FROM mcr.microsoft.com/dotnet/runtime:6.0-jammy-amd64
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Challenge.Chat.Api.dll"]
+COPY --from=build /app .
+ENTRYPOINT ["./dotnetapp"]
