@@ -1,5 +1,13 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
+WORKDIR /
+COPY ["*.sh", "/usr/local/bin/"]
+RUN chmod +x /usr/local/bin/entrypoint.sh
+CMD ["/usr/local/bin/entrypoint.sh"]
+
+EXPOSE 5672
+EXPOSE 15692
+
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -19,11 +27,3 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Challenge.Chat.Api.dll"]
-
-WORKDIR /
-
-RUN chmod +x entrypoint.sh
-CMD /bin/bash entrypoint.sh
-
-EXPOSE 5672
-EXPOSE 15692
