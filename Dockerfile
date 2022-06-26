@@ -20,6 +20,8 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Challenge.Chat.Api.dll"]
 
+WORKDIR /
+
 RUN chmod +x ./entrypoint.sh
 CMD /bin/bash ./entrypoint.sh
 
