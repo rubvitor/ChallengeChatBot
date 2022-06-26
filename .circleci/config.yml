@@ -1,11 +1,11 @@
-version: 3.4 
-  
- services: 
+version: 2.1
+
+services: 
    ChallengeChatBot: 
      build: ./ChallengeChatBot.Api/ChallengeChatBot.Api
    depends_on: 
-       - "rabbitmq" 
-     restart: always 
+      - "rabbitmq" 
+   restart: always 
    
    rabbitmq: # login guest:guest 
      image: rabbitmq:3-management 
