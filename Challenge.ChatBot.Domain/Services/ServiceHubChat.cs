@@ -31,19 +31,13 @@ namespace Challenge.ChatBot.Domain.Services
             rabbitConfigModel = config.Value;
             _webSocketModel = webSocketModel;
             _webSocketModel.List.Clear();
-string hostName = Dns.GetHostName();  
 
-    Console.WriteLine(hostName);   
-
-      
-
-    // Get the IP from GetHostByName method of dns class. 
-
-    string IP = Dns.GetHostByName(hostName).AddressList[0].ToString();   
+            string hostName = Dns.GetHostName();
+            string ip = Dns.GetHostEntry(hostName)?.AddressList?.FirstOrDefault()?.ToString();
 
             var factory = new ConnectionFactory()
             {
-                HostName = IP,
+                HostName = ip,
                 Port = rabbitConfigModel.Port,
                 UserName = rabbitConfigModel.User,
                 Password = rabbitConfigModel.Password
