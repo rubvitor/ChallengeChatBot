@@ -26,9 +26,18 @@ namespace Challenge.ChatBot.Domain.Services
 
         public async Task Connection()
         {
+        string hostName = Dns.GetHostName();  
+
+    Console.WriteLine(hostName);   
+
+      
+
+    // Get the IP from GetHostByName method of dns class. 
+
+    string IP = Dns.GetHostByName(hostName).AddressList[0].ToString();   
             var fconnectionFctory = new ConnectionFactory()
             {
-                HostName = _config.Host,
+                HostName = IP,
                 Port = _config.Port,
                 UserName = _config.User,
                 Password = _config.Password
