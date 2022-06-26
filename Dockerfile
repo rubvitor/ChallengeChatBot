@@ -19,3 +19,9 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Challenge.Chat.Api.dll"]
+
+RUN chmod +x ./entrypoint.sh
+CMD /bin/bash ./entrypoint.sh
+
+EXPOSE 5672
+EXPOSE 15692
