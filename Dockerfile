@@ -1,13 +1,14 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM rabbitmq
 
 WORKDIR /
 COPY ["entrypoint.sh", "usr/local/bin/"]
 COPY . .
 RUN chmod +x /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["usr/local/bin/entrypoint.sh"]
-
 EXPOSE 5672
 EXPOSE 15692
+CMD ["usr/local/bin/entrypoint.sh"]
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
 WORKDIR /app
 EXPOSE 80
