@@ -1,9 +1,9 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
 WORKDIR /
-COPY ["*.sh", "/usr/local/bin/"]
+COPY ["entrypoint.sh", "usr/local/bin/"]
 RUN chmod +x /usr/local/bin/entrypoint.sh
-CMD ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
+CMD ["/usr/local/bin/entrypoint.sh"]
 
 EXPOSE 5672
 EXPOSE 15692
