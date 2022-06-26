@@ -10,6 +10,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Net.WebSockets;
 using System.Text;
+using System.Net;
 
 namespace Challenge.ChatBot.Domain.Services
 {
