@@ -1,4 +1,3 @@
-# https://hub.docker.com/_/microsoft-dotnet
 FROM mcr.microsoft.com/dotnet/sdk:6.0-jammy AS build
 
 # Add files.
@@ -32,13 +31,13 @@ CMD ["rabbitmq-start"]
 EXPOSE 5672
 EXPOSE 15672
 
-
 WORKDIR /
-COPY ["Challenge.Chat.Api/Challenge.Chat.Api.csproj", "Challenge.Chat.Api/"]
-WORKDIR "/Challenge.Chat.Api"
+EXPOSE 80
+EXPOSE 443
 
-# copy csproj and restore as distinct layers
-COPY *.csproj .
+COPY ["Challenge.Chat.Api/Challenge.Chat.Api.csproj", "Challenge.Chat.Api/"]
+COPY . .
+WORKDIR "/Challenge.Chat.Api"
 RUN dotnet restore -r linux-x64
 
 # copy and publish app and libraries
