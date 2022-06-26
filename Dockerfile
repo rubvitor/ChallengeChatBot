@@ -33,11 +33,6 @@ EXPOSE 5672
 EXPOSE 15672
 
 
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-
-FROM mcr.microsoft.com/dotnet/runtime AS build
 WORKDIR /
 COPY ["Challenge.Chat.Api/Challenge.Chat.Api.csproj", "Challenge.Chat.Api/"]
 WORKDIR "/Challenge.Chat.Api"
