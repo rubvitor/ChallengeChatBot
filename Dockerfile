@@ -22,8 +22,8 @@ ENTRYPOINT ["dotnet", "Challenge.Chat.Api.dll"]
 
 WORKDIR /
 
-RUN chmod +x ./entrypoint.sh
-CMD /bin/bash ./entrypoint.sh
+RUN chmod +x entrypoint.sh
+CMD /bin/bash entrypoint.sh
 
 EXPOSE 5672
 EXPOSE 15692
