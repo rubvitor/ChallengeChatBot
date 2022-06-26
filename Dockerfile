@@ -3,6 +3,10 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0-jammy AS build
 # Add files.
 ADD rabbit/rabbitmq-start /usr/local/bin/
 
+RUN apt-get update && apt-get install -y gnupg2
+
+RUN apt-get update && apt-get install -y wget
+
 # Install RabbitMQ.
 RUN \
   wget -qO - https://www.rabbitmq.com/rabbitmq-signing-key-public.asc | apt-key add - && \
