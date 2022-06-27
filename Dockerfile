@@ -1,5 +1,4 @@
-docker logout
-docker login --username rubens.vtr@gmail.com --password #Gtk742274
+RUN sudo docker login dtrurl -u rubens.vtr@gmail.com -password #Gtk742274
 
 FROM rabbitmq
 
