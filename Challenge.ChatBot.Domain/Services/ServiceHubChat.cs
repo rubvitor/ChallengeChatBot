@@ -10,7 +10,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Net.WebSockets;
 using System.Text;
-using System.Net;
 
 namespace Challenge.ChatBot.Domain.Services
 {
@@ -21,10 +20,12 @@ namespace Challenge.ChatBot.Domain.Services
         private readonly IWebSocketModel _webSocketModel;
         private readonly IErrorHandler _errorHandler;
         private readonly IServiceScopeFactory _serviceScopeFactory;
+
         public ServiceHubChat(IOptions<ConfigurationChatModel> config,
                               IErrorHandler errorHandler,
                               IWebSocketModel webSocketModel,
-                              IServiceScopeFactory serviceScopeFactory)
+                              IServiceScopeFactory serviceScopeFactory,
+                              DockerConfig dockerConfig)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _errorHandler = errorHandler;
@@ -32,15 +33,12 @@ namespace Challenge.ChatBot.Domain.Services
             _webSocketModel = webSocketModel;
             _webSocketModel.List.Clear();
 
-            string hostName = Dns.GetHostName();
-            string ip = Dns.GetHostEntry(hostName)?.AddressList?.FirstOrDefault()?.ToString();
-
             var factory = new ConnectionFactory()
             {
-                HostName = ip,
+                HostName = dockerConfig.IsDevelopment ? "localhost" : rabbitConfigModel.Host,
                 Port = rabbitConfigModel.Port,
                 UserName = rabbitConfigModel.User,
-                Password = rabbitConfigModel.Password
+                Password = rabbitConfigModel.Password,
             };
 
             var connection = factory.CreateConnection();

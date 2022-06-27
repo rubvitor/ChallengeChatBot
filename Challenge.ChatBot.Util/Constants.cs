@@ -32,4 +32,13 @@ namespace Challenge.ChatBot.Util
     {
         public static string Key = "djaksdjaskdlj2735q739123";
     }
+
+    public class DockerConfig
+    {
+        public DockerConfig(bool isDevelopment)
+        {
+            IsDevelopment = isDevelopment;
+        }
+        public bool IsDevelopment { get; set; }
+    }
 }

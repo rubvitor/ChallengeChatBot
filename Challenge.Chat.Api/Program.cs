@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 
@@ -16,6 +17,7 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnCh
 
 builder.Services.AddControllers()
                 .AddJsonOptions(opt => opt.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -52,6 +54,11 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDomains();
 
 builder.Services.AddCors();
+
+var hostname = Dns.GetHostName();
+var ip = Dns.GetHostByName(hostname)?.AddressList?.FirstOrDefault(x => !x.IsIPv6LinkLocal)?.ToString();
+
+builder.Services.AddSingleton<DockerConfig>(new DockerConfig(builder.Environment.IsDevelopment()));
 
 var key = Encoding.ASCII.GetBytes(Settings.Secret);
 builder.Services.AddAuthentication(x =>

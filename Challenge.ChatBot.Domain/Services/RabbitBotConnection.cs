@@ -2,12 +2,12 @@
 using Challenge.ChatBot.Domain.Core.Interfaces.RabbitMQ;
 using Challenge.ChatBot.Domain.Core.Interfaces.Services;
 using Challenge.ChatBot.Domain.Core.Models;
+using Challenge.ChatBot.Util;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
-using System.Net;
 
 namespace Challenge.ChatBot.Domain.Services
 {
@@ -16,26 +16,26 @@ namespace Challenge.ChatBot.Domain.Services
         private readonly ConfigurationChatModel _config;
         private readonly IServiceGetStock _serviceHub;
         private readonly IErrorHandler _errorHandler;
+        private readonly DockerConfig _dockerConfig;
         public RabbitBotConnection(IOptions<ConfigurationChatModel> config,
                                    IServiceGetStock serviceHub,
-                                   IErrorHandler errorHandler)
+                                   IErrorHandler errorHandler,
+                                   DockerConfig dockerConfig)
         {
             _errorHandler = errorHandler;
             _serviceHub = serviceHub;
             _config = config?.Value;
+            _dockerConfig = dockerConfig;
         }
 
         public async Task Connection()
         {
-            string hostName = Dns.GetHostName();
-            string ip = Dns.GetHostEntry(hostName)?.AddressList?.FirstOrDefault()?.ToString();
-
             var fconnectionFctory = new ConnectionFactory()
             {
-                HostName = ip,
+                HostName = _dockerConfig.IsDevelopment? "localhost" : _config.Host,
                 Port = _config.Port,
                 UserName = _config.User,
-                Password = _config.Password
+                Password = _config.Password,
             };
 
             var connection = fconnectionFctory.CreateConnection();

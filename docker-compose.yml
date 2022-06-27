@@ -1,21 +1,43 @@
-version: 2.1
+version: '3.4'
 
-services: 
-   ChallengeChatBot: 
-     build: ./ChallengeChatBot.Api/ChallengeChatBot.Api
-   depends_on: 
-      - "rabbitmq" 
-   restart: always 
-   
-   rabbitmq: # login guest:guest 
-     image: rabbitmq:3-management 
-     hostname: "localhost" 
-     labels: 
-       NAME: "rabbitmq" 
-     ports: 
-     - "4369:4369" 
-     - "5671:5671" 
-     - "5672:5672" 
-     - "25672:25672" 
-     - "15671:15671" 
-     - "15672:15672"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: "rabbitmq"
+    hostname: "rabbitmq"
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+      - 5672
+      - 15672
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 5s
+      timeout: 15s
+      retries: 1
+    networks:
+      - chatbot
+  chatapi:
+    build: ./
+    container_name: "chatbot"
+    hostname: "chatbot"
+    ports:
+      - "80:80"
+      - "443:443"
+    expose:
+      - 80
+      - 443
+    networks:
+      - chatbot
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+
+networks:
+  chatbot:
+    driver: bridge
