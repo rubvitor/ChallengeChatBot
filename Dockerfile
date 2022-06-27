@@ -1,5 +1,3 @@
-RUN sudo docker login -username rubens.vtr@gmail.com -password #Gtk742274
-
 FROM rabbitmq
 
 RUN rabbitmq-plugins enable --offline rabbitmq_management
