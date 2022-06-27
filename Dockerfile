@@ -5,7 +5,7 @@
 #
 
 # Pull base image.
-FROM dockerfile/ubuntu
+FROM ubuntu:20.04
 
 # Add files.
 ADD rabbitmq/rabbitmq-start /usr/local/bin/
